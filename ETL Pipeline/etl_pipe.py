@@ -2,7 +2,7 @@ import kafka
 import json
 import os
 import concurrent.futures
-import urllib2
+import urllib.request
 import pdfplumber
 import pandas as pd
 from sqlalchemy import create_engine
@@ -139,7 +139,7 @@ def transform_and_load_data(pdf_path, db_url, report_type):
 
 #######################  CHECK IF WORKS THEN DELETE AFTER DONE ######################################
 def download_pdf_from_firestore(url, name):
-    response = urllib2.urlopen(url)
+    response = urllib.request.urlopen(url)
     file = open(name, 'wb')
     file.write(response.read())
     file.close()
