@@ -1,0 +1,7 @@
+Test_name,Subtest_qcr1,Values_qcr1,Subtest_qcr2,Values_qcr2,Subtest_qmr,Values_qmr,road_id
+Soil Gradation,Soil Gradation,19.6,Soil Gradation,19.0,Soil Gradation,19.5,road_1
+Atterberg limits,Liquid limit (LL),27.8,Liquid limit (LL),28.2,Liquid limit (LL),27.4,road_1
+Atterberg limits,Plastic limit (PL),45.9,Plastic limit (PL),46.3,Plastic limit (PL),45.9,road_1
+Atterberg limits,Plasticity Index (PI),0.5,Plasticity Index (PI),0.9,Plasticity Index (PI),0.5,road_1
+Natural Moisture Content,Natural Moisture Content,37.2,Natural Moisture Content,36.2,Natural Moisture Content,97.6,road_1
+Proctor Density,Proctor Density,29.1,Proctor Density,29.9,Proctor Density,28.7,road_1
