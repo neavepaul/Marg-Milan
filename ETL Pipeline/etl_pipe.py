@@ -1,6 +1,8 @@
 import kafka
 import json
+import os
 import concurrent.futures
+import urllib2
 import pdfplumber
 import pandas as pd
 from sqlalchemy import create_engine
@@ -135,6 +137,17 @@ def transform_and_load_data(pdf_path, db_url, report_type):
         print(f"Error processing PDF: {str(e)}")
         raise
 
+#######################  CHECK IF WORKS THEN DELETE AFTER DONE ######################################
+def download_pdf_from_firestore(url, name):
+    response = urllib2.urlopen(url)
+    file = open(name, 'wb')
+    file.write(response.read())
+    file.close()
+    path = os.path.join(os.getcwd(), name)
+    return path
+################################################################################
+
+
 # Number of parallel workers (adjust as needed)
 num_workers = 4
 
@@ -144,9 +157,10 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         message_data = json.loads(message.value)
         pdf_url = message_data.get("pdf_url")
         report_type = message_data.get("report_type")
+        file_name = message_data.get("file_name")
 
         # TODO Download the PDF using the Firestore URL
-        pdf_content = download_pdf_from_firestore(pdf_url)
+        local_path = download_pdf_from_firestore(pdf_url, file_name)
 
         # Submit PDF processing tasks to the ThreadPoolExecutor
-        executor.submit(transform_and_load_data, pdf_content, report_type)
+        executor.submit(transform_and_load_data, local_path, report_type)
