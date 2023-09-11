@@ -90,15 +90,36 @@ def transform_and_load_data(pdf_path, db_url, report_type):
             # Create a new row in the appropriate table with the transformed values
             if report_type == 'qcr1':
                 report = QCR1Report(
-                    # Populate report fields here
+                    qcr1_id=uid,
+                    road_id=road.id,
+                    surveyor_id=surveyor.id,
+                    test_id=test.id,
+                    subtest_id=subtest.id,
+                    iteration=1,
+                    value=row['values'],
+                    timestamp=row['timestamp']
                 )
             elif report_type == 'qcr2':
                 report = QCR2Report(
-                    # Populate report fields here
+                    qcr2_id=uid,
+                    road_id=road.id,
+                    surveyor_id=surveyor.id,
+                    test_id=test.id,
+                    subtest_id=subtest.id,
+                    iteration=1,
+                    value=row['values'],
+                    timestamp=row['timestamp']
                 )
             elif report_type == 'qmr':
                 report = QMRReport(
-                    # Populate report fields here
+                    qmr_id=uid,
+                    road_id=road.id,
+                    surveyor_id=surveyor.id,
+                    test_id=test.id,
+                    subtest_id=subtest.id,
+                    iteration=1,
+                    value=row['values'],
+                    timestamp=row['timestamp']
                 )
             else:
                 print("Bro! what is this file now?")
