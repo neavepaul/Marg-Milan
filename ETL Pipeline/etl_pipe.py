@@ -143,7 +143,7 @@ def transform_and_load_data(pdf_path, db_url, report_type, url):
         availability_message = {
             "pdf_url": pdf_url,
             "report_type": report_type,
-            "file_name": file_name,
+            "road_id": road_id,
             "status": "available"  # Indicate that the PDF is available and preprocessing is complete
         }
         producer.send(f"{report_type}_availability_topic", json.dumps(availability_message).encode("utf-8"))
@@ -170,7 +170,8 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         message_data = json.loads(message.value)
         pdf_url = message_data.get("pdf_url")
         report_type = message_data.get("report_type")
-        file_name = message_data.get("file_name")
+        road_id = message_data.get("road_id")
+        file_name = road_id+"_"+report_type+".pdf"
 
         # Download the PDF using the Firestore URL
         local_path = download_pdf_from_firestore(pdf_url, file_name)

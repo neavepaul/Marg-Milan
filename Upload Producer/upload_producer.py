@@ -17,16 +17,16 @@ def upload_pdf():
         data = request.json
         pdf_url = data.get('pdf_url')
         report_type = data.get('report_type')
-        file_name = data.get('file_name')
+        road_id = data.get('road_id')
 
-        if not (pdf_url and report_type and file_name):
+        if not (pdf_url and report_type and road_id):
             return jsonify({"error": "Invalid data format"}), 400
 
         # Create a message with the data
         message_data = {
             "pdf_url": pdf_url,
             "report_type": report_type,
-            "file_name": file_name
+            "road_id": road_id
         }
 
         # Publish the message to the Kafka PDF upload topic using concurrent.futures
