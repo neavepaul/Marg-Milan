@@ -19,6 +19,9 @@ kafka_config = {
 # Create a Kafka consumer for the PDF upload topic
 consumer = kafka.KafkaConsumer("pdf_upload_topic", **kafka_config)
 
+# Define a Kafka producer for the availability notification topics
+producer = kafka.KafkaProducer(bootstrap_servers="kafka_broker_url")
+
 local_path = ""
 
 # Define your database connection URL
@@ -74,7 +77,7 @@ def process_pdf(pdf_path, report_type):
         return test_results_df
 
 # Define a function for transformation and loading
-def transform_and_load_data(pdf_path, db_url, report_type):
+def transform_and_load_data(pdf_path, db_url, report_type, url):
     try:
         test_results = process_pdf(pdf_path, report_type)
 
@@ -101,7 +104,7 @@ def transform_and_load_data(pdf_path, db_url, report_type):
                     value=row['values'],
                     iteration=1,
                     timestamp=row['timestamp'],
-                    url="https://firebasestorage.googleapis.com/v0/b/auction-ffe0a.appspot.com/o/test%2Ftest_report_1.pdf?alt=media&token=37776ab3-ec33-4955-8a0b-3c6cd35fbae3"
+                    url=url
                 )
             elif report_type == 'qcr2':
                 report = QCR2Report(
@@ -113,7 +116,7 @@ def transform_and_load_data(pdf_path, db_url, report_type):
                     value=row['values'],
                     iteration=1,
                     timestamp=row['timestamp'],
-                    url="https://firebasestorage.googleapis.com/v0/b/auction-ffe0a.appspot.com/o/test%2Ftest_report_1.pdf?alt=media&token=37776ab3-ec33-4955-8a0b-3c6cd35fbae3"
+                    url=url
                 )
             elif report_type == 'qmr':
                 report = QMRReport(
@@ -124,7 +127,7 @@ def transform_and_load_data(pdf_path, db_url, report_type):
                     subtest_id=subtest.id,
                     value=row['values'],
                     timestamp=row['timestamp'],
-                    url="https://firebasestorage.googleapis.com/v0/b/auction-ffe0a.appspot.com/o/test%2Ftest_report_1.pdf?alt=media&token=37776ab3-ec33-4955-8a0b-3c6cd35fbae3"
+                    url=url
                 )
             else:
                 print("Bro! what is this file now?")
@@ -135,6 +138,15 @@ def transform_and_load_data(pdf_path, db_url, report_type):
         session.commit()
         session.close()
         engine.dispose()
+
+        # Send availability notification message to the respective topic
+        availability_message = {
+            "pdf_url": pdf_url,
+            "report_type": report_type,
+            "file_name": file_name,
+            "status": "available"  # Indicate that the PDF is available and preprocessing is complete
+        }
+        producer.send(f"{report_type}_availability_topic", json.dumps(availability_message).encode("utf-8"))
 
     except Exception as e:
         print(f"Error processing PDF: {str(e)}")
@@ -164,4 +176,4 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         local_path = download_pdf_from_firestore(pdf_url, file_name)
 
         # Submit PDF processing tasks to the ThreadPoolExecutor
-        executor.submit(transform_and_load_data, local_path, report_type)
+        executor.submit(transform_and_load_data, local_path, report_type, pdf_url)
