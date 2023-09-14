@@ -6,8 +6,7 @@ app = Flask(__name__)
 
 # PostgreSQL database configuration
 app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = "postgresql://postgres:password@localhost:5432/SIH"
+    "SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost:5432/SIH"
 db = SQLAlchemy(app)
 
 # Create a model for your table
