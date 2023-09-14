@@ -1,4 +1,4 @@
-DROP TABLE reports,qcr1,qcr2,qmr,roads,subtest,surveyors,test;
+DROP TABLE reports,qcr1,qcr2,qmr,roads,subtest,surveyors,test, records, summary;
 
 CREATE TABLE roads (
     road_id serial PRIMARY KEY,
@@ -75,6 +75,24 @@ CREATE TABLE reports (
 	url varchar(255)
 );
 
+-- Create the records table
+CREATE TABLE records (
+    serial_no serial PRIMARY KEY,
+    report_id serial,
+    road_id integer REFERENCES roads(road_id),
+    report_type varchar(255),
+    url varchar(255)
+    -- timestamp timestamp
+);
+
+-- Create the summary table with serial_no as the primary key
+CREATE TABLE summary (
+    serial_no serial PRIMARY KEY,
+    road_id integer REFERENCES roads(road_id),
+    flag integer DEFAULT 0,
+    countoffiles integer DEFAULT 0,
+    is_processed integer DEFAULT 0
+);
 
 INSERT INTO roads(road_id,
     road_name,
@@ -98,4 +116,4 @@ INSERT INTO subtest(subtest_id,subtest_name) values(1,'1'),(2,'1'),(3,'2'),(4,'3
 
 SELECT * FROM roads where road_name='Hill road';
 
-SELECT * FROM qcr1;
+-- SELECT * FROM qcr1;
