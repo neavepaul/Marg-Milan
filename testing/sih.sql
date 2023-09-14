@@ -78,7 +78,7 @@ CREATE TABLE reports (
 -- Create the records table
 CREATE TABLE records (
     serial_no serial PRIMARY KEY,
-    report_id serial,
+    report_id integer,
     road_id integer REFERENCES roads(road_id),
     report_type varchar(255),
     url varchar(255)
@@ -111,9 +111,9 @@ INSERT INTO test (
 	(5,'Proctor Density (%)'),(6,'CBR (%)'),(7,'Swelling Index (%)'),(8,'Moisture content at time of compaction (%)'),
 	(9,'Thickness (inches)'),(10,'Field Density (%)'),(11,'Horizontal alignment (m)'),(12,'Horizontal alignment (%)');
 
-INSERT INTO subtest(subtest_id,subtest_name) values(1,'1'),(2,'1'),(3,'2'),(4,'3'),(5,'1'),(6,'2'),(7,'1'),(8,'2'),(9,'1'),(10,'2'),(11,'3'),
-	(12,'1'),(13,'1'),(14,'1'),(15,'1'),(16,'1'),(17,'2'),(18,'3'),(19,'4'),(20,'5');
+INSERT INTO subtest(subtest_id,subtest_name) values(1,'Soil Gradation'),(2,'Liquid limit (LL)'),(3,'Plastic Limit (PL)'),(4,'Plasticity Index (PI)'),(5,'Subgrade material'),(6,'Base and Sub-base Materials'),(7,'Maximum Dry Density (MDD)'),(8,'Optimum Moisture Content (OMC)'),(9,'Subgrade'),(10,'Base Course'),(11,'Sub-base'),
+	(12,'Swelling Index'),(13,'Moisture Content at the time of Compaction'),(14,'Thickness'),(15,'Field density'),(16,'Radius of Curvature (R)'),(17,'Superelevation (Banking)'),(18,'Transition Curve Length (L)'),(19,'Horizontal Curve Length (Lc)'),(20,'Grade (Slope)');
 
 SELECT * FROM roads where road_name='Hill road';
 
--- SELECT * FROM qcr1;
+SELECT * FROM qcr1;

@@ -1,51 +1,61 @@
-from kafka import KafkaConsumer
-import json
+import asyncio
+from kafka import KafkaProducer
+from sqlalchemy import create_engine, event
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text
 
-pulled_trigger = False
+# Kafka broker address
+bootstrap_servers = 'localhost:9092'
 
-topics = {
-    "QCR1": "qcr1_availability_topic",
-    "QCR2": "qcr2_availability_topic",
-    "QMR": "qmr_availability_topic"
-}
+# Kafka topic to produce messages to
+kafka_topic = 'post_process_topic'
 
-consumers = {}
+# PostgreSQL connection parameters
+db_url = 'postgresql://postgres:password@localhost:5432/SIH'
 
-tracker = {}
+# Create a KafkaProducer instance
+producer = KafkaProducer(bootstrap_servers=bootstrap_servers)
 
-for type, topic in topics.items():
-    consumers[type] = KafkaConsumer(
-        topic,
-        group_id=f"event_trigger_{type}",
-        bootstrap_servers='kafka_broker_url',
-        auto_offset_reset='earliest',
-        enable_auto_commit=False
-    )
+# Function to send a message to Kafka
+def send_message(message):
+    producer.send(kafka_topic, message.encode('utf-8'))
+    producer.flush()
 
-def check_trigger(road_id):
-    if all(tracker[road_id].values()) and not pulled_trigger:
-        pulled_trigger=True
+# SQLAlchemy setup
+engine = create_engine(db_url)
+Session = sessionmaker(bind=engine)
 
-def process_message(msg):
-    report_type = msg.get("report_type")
-    road_id = msg.get("road_id")
-    if road_id not in tracker:
-        tracker[road_id] = {
-            "QCR1":False,
-            "QCR2": False,
-            "QMR": False
-        }
+# Function to handle PostgreSQL notifications
+def handle_pg_notification(notify):
+    payload = notify.payload
+    send_message(payload)
+    print(f"Received notification: {payload}")
 
-    tracker[road_id][report_type] = True
-    print(f"{report_type} for {road_id} received")
-    check_trigger(road_id)
+if __name__ == "__main__":
+    # Create an asyncio event loop
+    loop = asyncio.get_event_loop()
 
-try:
-    while True:
-        for type, consumer in consumers.items():
-            for message in consumer:
-                message_data = json.loads(message.value)
-                process_message(message_data)
-except KeyboardInterrupt:
-    pass
-
+    # Listen to the PostgreSQL channel using SQLAlchemy
+    connection = engine.connect()
+    listen_command = "LISTEN kafka_channel;"
+    connection.execute(text(listen_command))
+    
+    # Register the event handler for PostgreSQL notifications
+    @event.listens_for(engine, "after_begin")
+    def receive_pg_notifications(conn, transaction, connection_record):
+        conn.execute("LISTEN kafka_channel;")
+        loop = asyncio.get_event_loop()
+        while True:
+            notifications = conn.connection.notifies
+            for notify in notifications:
+                handle_pg_notification(notify)
+    
+    try:
+        # Run the asyncio event loop
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()

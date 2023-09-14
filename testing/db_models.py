@@ -90,6 +90,15 @@ class QMR(Base):
 #     subtest_qmr = Column(Integer)
 #     values_qmr = Column(Integer)
 
+class Record(Base):
+    __tablename__ = 'records'
+    serial_no = Column(Integer, primary_key=True, autoincrement=True)
+    report_id = Column(Integer)
+    road_id = Column(Integer, ForeignKey('roads.road_id'))
+    report_type = Column(String)
+    url = Column(String)
+    # timestamp = Column(TIMESTAMP)
+
 
 Base.metadata.create_all(engine)
 # session.add(report)

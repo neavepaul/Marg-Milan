@@ -6,7 +6,7 @@ import pandas as pd
 from retrying import retry
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_models import Road, Surveyor, Test, Subtest, QCR1, QCR2, QMR
+from db_models import Road, Surveyor, Test, Subtest, QCR1, QCR2, QMR#, Records, Summary
 from sqlalchemy.exc import IntegrityError
 
 # Define your database connection URL
@@ -53,7 +53,7 @@ def process_pdf(pdf_path):
 
             # Extract and update metadata from each page
             page_metadata = extract_metadata(page_text)
-            metadata_df = metadata_df.append(
+            metadata_df = metadata_df._append(
                 pd.DataFrame.from_dict([page_metadata]), ignore_index=True)
 
             tables = page.find_tables(table_settings)
@@ -70,7 +70,7 @@ def process_pdf(pdf_path):
         test_results_df["Road Name"] = metadata_df["Road Name"][0]
         # Add "Report Type" column and fill with "qcr1"
         test_results_df["Report Type"] = random.choice(['qcr1', 'qcr2', 'qmr'])
-        # test_results_df["Report Type"] = 'qmr'
+        # test_results_df["Report Type"] = 'qcr1'
         report_type = test_results_df["Report Type"][0]
         return test_results_df, report_type
 
@@ -101,14 +101,14 @@ def transform_and_load_data(pdf_path, db_url):
                 test_name=row['Test Name']).first()
             subtest = session.query(Subtest).filter_by(
                 subtest_name=row['Subtest Name']).first()
-            print("WOrks still here", report_type)
-            print("XXXXXXX", surveyor)
-            # # Check if any of the objects is None, and if so, insert a new record
-            if road is None:
-                road = Road(road_name=row["Road Name"])
-                session.add(road)
-                session.commit()  # Commit the new road record
+            
+            # Check if any of the objects is None, and if so, insert a new record
+            # if road is None:
+            #     road = Road(road_name=row["Road Name"])
+            #     session.add(road)
+            #     session.commit()  # Commit the new road record
             if surveyor is None:
+                print("ALWAYS TRIES TO ADD SURVEYOR AGAIN FSR...  THE TABLE HAS TWO ABHISHEKHS NOW")
                 surveyor = Surveyor(surveyor_name=row['Surveyor Name'])
                 session.add(surveyor)
                 session.commit()  # Commit the new surveyor record
@@ -139,9 +139,7 @@ def transform_and_load_data(pdf_path, db_url):
                 )
             elif report_type == 'qmr':
 
-                print("WOrks still here")
                 values = float(row['Value'])
-                print("AAAAA", values)
                 report = QMR(
                     road_id=road.road_id,
                     surveyor_id=surveyor.surveyor_id,
@@ -154,7 +152,6 @@ def transform_and_load_data(pdf_path, db_url):
             else:
                 print("Bro! what is this file now?")
                 continue
-
             session.add(report)
 
         # Commit the changes to the database
@@ -176,7 +173,7 @@ pdf_paths = [os.path.join(pipeline_folder, filename) for filename in os.listdir(
     pipeline_folder) if filename.endswith('.pdf')]
 
 # Number of parallel workers (adjust as needed)
-num_workers = 4
+num_workers = 1
 
 # Create a ThreadPoolExecutor with the desired number of workers
 with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
@@ -186,3 +183,8 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
 
     # Wait for all tasks to complete
     concurrent.futures.wait(futures)
+
+
+# for pdf in pdf_paths:
+#     transform_and_load_data(pdf, db_url=db_url)
+#     break
