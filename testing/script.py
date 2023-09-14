@@ -13,6 +13,7 @@ db = SQLAlchemy(app)
 
 
 class Road(db.Model):
+    """ """
     __tablename__ = "roads"
     road_id = db.Column(db.Integer, primary_key=True)
     road_name = db.Column(db.String(255), nullable=False)
@@ -20,6 +21,7 @@ class Road(db.Model):
 
 @app.route("/get_data", methods=["GET"])
 def get_data():
+    """ """
     try:
         # Query the database to retrieve data from the specified columns
         data = db.session.query(Road.road_id, Road.road_name).all()
