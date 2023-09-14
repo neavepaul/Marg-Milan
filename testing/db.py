@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, TIMESTAMP, Float
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship, Session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -11,7 +11,7 @@ Base = declarative_base()
 
 class Road(Base):
     __tablename__ = 'roads'
-    road_id = Column(Integer, primary_key=True, autoincrement=True)
+    road_id = Column(Integer, primary_key=True)
     road_name = Column(String(255), nullable=False)
     district = Column(String(255))
     city = Column(String(255))
@@ -22,7 +22,7 @@ class Road(Base):
 class Subtest(Base):
     __tablename__ = 'subtest'
     subtest_id = Column(Integer, primary_key=True)
-    # test_name = Column(String(255))
+    test_name = Column(String(255))
     subtest_name = Column(String(255))
 
 
@@ -40,41 +40,38 @@ class Test(Base):
 
 class QCR1(Base):
     __tablename__ = 'qcr1'
-    qcr1_id = Column(Integer, primary_key=True, autoincrement=True)
+    qcr1_id = Column(Integer, primary_key=True)
     road_id = Column(Integer, ForeignKey('roads.road_id'))
     surveyor_id = Column(Integer, ForeignKey('surveyors.surveyor_id'))
     test_id = Column(Integer, ForeignKey('test.test_id'))
     subtest_id = Column(Integer, ForeignKey('subtest.subtest_id'))
-    values_qcr1 = Column(Float)
-    # iteration = Column(Integer)
-    # timestamp = Column(TIMESTAMP)
-    url = Column(String)
+    values_qcr1 = Column(Integer)
+    iteration = Column(Integer)
+    timestp = Column(TIMESTAMP)
 
 
 class QCR2(Base):
     __tablename__ = 'qcr2'
-    qcr2_id = Column(Integer, primary_key=True, autoincrement=True)
+    qcr2_id = Column(Integer, primary_key=True)
     road_id = Column(Integer, ForeignKey('roads.road_id'))
     surveyor_id = Column(Integer, ForeignKey('surveyors.surveyor_id'))
     test_id = Column(Integer, ForeignKey('test.test_id'))
     subtest_id = Column(Integer, ForeignKey('subtest.subtest_id'))
-    values_qcr2 = Column(Float)
-    # iteration = Column(Integer)
-    # timestamp = Column(TIMESTAMP)
-    url = Column(String)
+    values_qcr1 = Column(Integer)
+    iteration = Column(Integer)
+    timestp = Column(TIMESTAMP)
 
 
 class QMR(Base):
     __tablename__ = 'qmr'
-    qmr_id = Column(Integer, primary_key=True, autoincrement=True)
+    qmr_id = Column(Integer, primary_key=True)
     road_id = Column(Integer, ForeignKey('roads.road_id'))
     surveyor_id = Column(Integer, ForeignKey('surveyors.surveyor_id'))
     test_id = Column(Integer, ForeignKey('test.test_id'))
     subtest_id = Column(Integer, ForeignKey('subtest.subtest_id'))
-    values_qmr = Column(Float)
-    # iteration = Column(Integer)
-    # timestamp = Column(TIMESTAMP)
-    url = Column(String)
+    values_qcr1 = Column(Integer)
+    iteration = Column(Integer)
+    timestp = Column(TIMESTAMP)
 
 
 # class Report(Base):
@@ -92,5 +89,10 @@ class QMR(Base):
 
 
 Base.metadata.create_all(engine)
-# session.add(report)
-session.commit()
+
+
+users = session.query(Road).all()
+for user in users:
+    print(user.road_id, user.road_name, user.district, user.city)
+if len(users) == 0:
+    print("No values")
