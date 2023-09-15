@@ -1,12 +1,16 @@
 import kafka
 import json
 import os
+import pathlib
+import concurrent.futures
 import urllib.request
 import pdfplumber
 import pandas as pd
 from sqlalchemy import create_engine, pool
 from sqlalchemy.orm import sessionmaker
 from db_models import Road, Surveyor, Test, Subtest, QCR1, QCR2, QMR
+from multiprocessing import Process
+
 
 # Define your Kafka configuration
 kafka_config = {
@@ -16,6 +20,8 @@ kafka_config = {
     "enable_auto_commit": True,
     "auto_commit_interval_ms": 1000
 }
+
+local_path = ""
 
 # Define your database connection URL
 db_url = 'postgresql://postgres:password@localhost:5432/SIH'
@@ -66,21 +72,24 @@ def process_pdf(pdf_path, report_type):
         test_results_df["Surveyor Name"] = metadata_df["Surveyor's Name"][0]
         test_results_df["Road Name"] = metadata_df["Road Name"][0]
         test_results_df["Report Type"] = str(report_type)
+        print("Before delete XXXXXXXXXXXXXXX")
 
         # Close the PDF file explicitly
         pdf.close()
 
         os.remove(pdf_path)
+        print(local_path)
         print("File deleted")
-
+        # pathlib.Path.unlink(local_path)
         return test_results_df
 
 # Define a function for transformation and loading
 def transform_and_load_data(pdf_path, db_url, report_type, pdf_url, roadid):
-    print(report_type)
+    print("Path: "+str(pdf_path))
     try:
         test_results = process_pdf(pdf_path, report_type)
 
+        # engine = create_engine(db_url)
         engine = create_engine(db_url, poolclass=pool.QueuePool, pool_size=5, max_overflow=10)
         Session = sessionmaker(bind=engine)
         session = Session()
@@ -104,39 +113,45 @@ def transform_and_load_data(pdf_path, db_url, report_type, pdf_url, roadid):
                     session.add(road)
                     session.commit()  # Commit the new road record
                 if surveyor is None:
+                    print("ALWAYS TRIES TO ADD SURVEYOR AGAIN FSR...  THE TABLE HAS TWO ABHISHEKHS NOW")
                     surveyor = Surveyor(surveyor_name=row['Surveyor Name'])
                     session.add(surveyor)
                     session.commit()  # Commit the new surveyor record
 
+
                 # Create a new row in the appropriate table with the transformed values
-                if report_type == 'QCR1':
+                if report_type == 'qcr1':
                     values = float(row['Value'])
                     report = QCR1(
                         road_id=road.road_id,
                         surveyor_id=surveyor.surveyor_id,
                         test_id=test.test_id,
                         subtest_id=subtest.subtest_id,
-                        values_qcr1=values,
+                        values_qcr1=values,   # Remove qmr_id assignment
+                        # timestamp='2023-09-13 12:34:56.789012',
                         url=pdf_url
                     )
-                elif report_type == 'QCR2':
+                elif report_type == 'qcr2':
                     values = float(row['Value'])
                     report = QCR2(
                         road_id=road.road_id,
                         surveyor_id=surveyor.surveyor_id,
                         test_id=test.test_id,
                         subtest_id=subtest.subtest_id,
-                        values_qcr2=values,
+                        values_qcr2=values,   # Remove qmr_id assignment
+                        # timestamp='2023-09-13 12:34:56.789012',
                         url=pdf_url
                     )
-                elif report_type == 'QMR':
+                elif report_type == 'qmr':
+
                     values = float(row['Value'])
                     report = QMR(
                         road_id=road.road_id,
                         surveyor_id=surveyor.surveyor_id,
                         test_id=test.test_id,
                         subtest_id=subtest.subtest_id,
-                        values_qmr=values,
+                        values_qmr=values,   # Remove qmr_id assignment
+                        # timestamp='2023-09-13 12:34:56.789012',
                         url=pdf_url
                     )
                 else:
@@ -148,6 +163,14 @@ def transform_and_load_data(pdf_path, db_url, report_type, pdf_url, roadid):
             session.close()
             engine.dispose()
             print("Report added")
+
+        # Send availability notification message to the respective topic
+        availability_message = {
+            "pdf_url": pdf_url,
+            "report_type": report_type,
+            "road_id": roadid,
+            "status": "available"  # Indicate that the PDF is available and preprocessing is complete
+        }
 
     except Exception as e:
         print(f"Error processing PDF: {str(e)}")
@@ -161,22 +184,37 @@ def download_pdf_from_firestore(url, name):
     path = os.path.join(os.getcwd(), name)
     return path
 
-# Create a Kafka consumer for the PDF upload topic
+
+# Create a ThreadPoolExecutor with the desired number of workers
 def start_consumer():
+    # Create a Kafka consumer for the PDF upload topic
     consumer = kafka.KafkaConsumer("PDFUploadTopic", **kafka_config)
     for message in consumer:
         message_data = json.loads(message.value)
         pdf_url = message_data.get("pdf_url")
         report_type = message_data.get("report_type")
         road_id = message_data.get("road_id")
-        file_name = str(road_id) + "_" + report_type.upper() + ".pdf"
+        file_name = str(road_id)+"_"+report_type.upper()+".pdf"
 
         # Download the PDF using the Firestore URL
         local_path = download_pdf_from_firestore(pdf_url, file_name)
         print("File Downloaded")
+        
 
-        # Process and load the data from the downloaded PDF
+        # Submit PDF processing tasks to the ThreadPoolExecutor
         transform_and_load_data(local_path, db_url, report_type, pdf_url, road_id)
 
+
 if __name__ == '__main__':
-    start_consumer()
+    # Number of parallel workers (adjust as needed)
+    num_consumers = 1
+    # Create multiple Kafka consumer processes
+    processes = []
+    for i in range(num_consumers):
+        process = Process(target=start_consumer)
+        processes.append(process)
+        process.start()
+
+    # Wait for all processes to complete
+    for process in processes:
+        process.join()

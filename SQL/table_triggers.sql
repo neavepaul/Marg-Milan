@@ -130,3 +130,4 @@ CREATE TRIGGER update_flag_to_3
 AFTER UPDATE OF countoffiles ON summary
 FOR EACH ROW
 EXECUTE FUNCTION set_flag_to_3();
+x

@@ -5,7 +5,7 @@ BEGIN
   -- Check if the flag column is 1
   IF NEW.flag = 1 THEN
     -- Send a message to the Kafka topic
-    PERFORM pg_notify('kafka_channel', 'All the files are available');
+    PERFORM pg_notify('kafka_channel', 'All the files are available for road_id: ' || NEW.road_id);
   END IF;
   RETURN NEW;
 END;

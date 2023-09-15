@@ -102,7 +102,7 @@ INSERT INTO roads(road_id,
     pincode) values(1,'Hill road','Mumbai','Mumbai','Maharashtra',400050);
 
 
-INSERT INTO surveyors(surveyor_id,surveyor_name) values(1,'Mr. Abhisekh');
+INSERT INTO surveyors(surveyor_id,surveyor_name) values(1,'Mr. Abhishek');
 
 
 INSERT INTO test (

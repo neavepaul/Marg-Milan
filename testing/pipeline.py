@@ -6,7 +6,7 @@ import pandas as pd
 from retrying import retry
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_models import Road, Surveyor, Test, Subtest, QCR1, QCR2, QMR#, Records, Summary
+from db_models import Road, Surveyor, Test, Subtest, QCR1, QCR2, QMR#, `Records, Summary
 from sqlalchemy.exc import IntegrityError
 
 # Define your database connection URL

@@ -7,7 +7,7 @@ import concurrent.futures
 app = Flask(__name__)
 
 # Initialize Kafka producer
-kafka_producer = kafka.KafkaProducer(bootstrap_servers="kafka_broker_url")
+kafka_producer = kafka.KafkaProducer(bootstrap_servers="localhost:9092")
 
 # Define a route to accept PDF upload data
 @app.route('/upload_pdf', methods=['POST'])
@@ -41,7 +41,7 @@ def upload_pdf():
 def publish_to_kafka(message_data):
     try:
         # Publish the message to the Kafka PDF upload topic
-        kafka_producer.send("pdf_upload_topic", json.dumps(message_data).encode("utf-8"))
+        kafka_producer.send("PDFUploadTopic", json.dumps(message_data).encode("utf-8"))
     except Exception as e:
         print(f"Error publishing to Kafka: {str(e)}")
 
