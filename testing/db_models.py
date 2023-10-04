@@ -30,6 +30,7 @@ class Surveyor(Base):
     __tablename__ = 'surveyors'
     surveyor_id = Column(Integer, primary_key=True)
     surveyor_name = Column(String(255), nullable=False)
+    surveyor_email = Column(String(255), nullable=False)
 
 
 class Test(Base):
@@ -98,6 +99,14 @@ class Record(Base):
     report_type = Column(String)
     url = Column(String)
     # timestamp = Column(TIMESTAMP)
+
+
+class Discp_report(Base):
+    __tablename__ = 'discrepancyreports'
+    discp_id = Column(Integer, primary_key=True, autoincrement=True)
+    road_id = Column(Integer)
+    qcr_id = Column(Integer)
+    report_text = Column(String(255), nullable=False)
 
 
 Base.metadata.create_all(engine)
