@@ -17,7 +17,8 @@ CREATE TABLE subtest (
 
 CREATE TABLE surveyors (
     surveyor_id serial PRIMARY KEY,
-    surveyor_name varchar(255) NOT NULL
+    surveyor_name varchar(255) NOT NULL,
+    surveyor_email varchar(255) NOT NULL
 );
 
 CREATE TABLE test (
@@ -94,6 +95,14 @@ CREATE TABLE summary (
     is_processed integer DEFAULT 0
 );
 
+CREATE TABLE discrepancyreports (
+    discp_id serial PRIMARY KEY,
+    road_id integer REFERENCES roads(road_id),
+    flag integer DEFAULT 0,
+    countoffiles integer DEFAULT 0,
+    is_processed integer DEFAULT 0
+);
+
 INSERT INTO roads(road_id,
     road_name,
     district,
@@ -102,7 +111,7 @@ INSERT INTO roads(road_id,
     pincode) values(1,'Hill road','Mumbai','Mumbai','Maharashtra',400050);
 
 
-INSERT INTO surveyors(surveyor_id,surveyor_name) values(1,'Mr. Abhishek');
+INSERT INTO surveyors(surveyor_id,surveyor_name,surveyor_email) values(1,'Mr. Abhishek','abhi@shaikh.com');
 
 
 INSERT INTO test (

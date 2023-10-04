@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Data Display</title>
+	</head>
+	<body>
+		<h1>Data Display</h1>
+		<p>QCR1 Data:</p>
+		<pre id="qcr1-data"></pre>
+		<p>QCR2 Data:</p>
+		<pre id="qcr2-data"></pre>
+		<p>QMR Data:</p>
+		<pre id="qmr-data"></pre>
+
+		<script>
+			// Function to fetch data from the Flask endpoint
+			function fetchData() {
+				fetch("http://localhost:5000/") // Specify the URL
+					.then((response) => response.json())
+					.then((data) => {
+						console.log(data);
+
+						// Display QCR1 data
+						document.getElementById("qcr1-data").textContent = JSON.stringify(
+							data.qcr1_data,
+							null,
+							2
+						);
+
+						// Display QCR2 data
+						document.getElementById("qcr2-data").textContent = JSON.stringify(
+							data.qcr2_data,
+							null,
+							2
+						);
+
+						// Display QMR data
+						document.getElementById("qmr-data").textContent = JSON.stringify(
+							data.qmr_data,
+							null,
+							2
+						);
+					})
+					.catch((error) => {
+						console.error("Error fetching data:", error);
+					});
+			}
+
+			// Call the fetchData function to load data when the page loads
+			fetchData();
+		</script>
+	</body>
+</html>
