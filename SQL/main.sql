@@ -98,9 +98,8 @@ CREATE TABLE summary (
 CREATE TABLE discrepancyreports (
     discp_id serial PRIMARY KEY,
     road_id integer REFERENCES roads(road_id),
-    flag integer DEFAULT 0,
-    countoffiles integer DEFAULT 0,
-    is_processed integer DEFAULT 0
+    qmr_id integer REFERENCES qmr(qmr_id),
+    report_text json NOT NULL,
 );
 
 INSERT INTO roads(road_id,

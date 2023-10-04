@@ -1,0 +1,6 @@
+Flask
+opencv-python
+numpy
+PyMuPDF
+Gunicorn
+Flask-Cors

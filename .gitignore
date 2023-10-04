@@ -8,3 +8,4 @@ DocumentQuality/v0_quality_api.py
 DocumentQuality/doc-check
 DocumentQuality/test
 DocumentQuality/web_quality_model
+__pycache__

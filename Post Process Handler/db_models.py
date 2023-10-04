@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, TIMESTAMP, Float
 from sqlalchemy.orm import relationship, Session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import sessionmaker
 
 engine = create_engine('postgresql://postgres:password@localhost:5432/SIH')
@@ -30,6 +31,7 @@ class Surveyor(Base):
     __tablename__ = 'surveyors'
     surveyor_id = Column(Integer, primary_key=True)
     surveyor_name = Column(String(255), nullable=False)
+    surveyor_email = Column(String(255), nullable=False)
 
 
 class Test(Base):
@@ -98,6 +100,17 @@ class Record(Base):
     report_type = Column(String)
     url = Column(String)
     # timestamp = Column(TIMESTAMP)
+
+
+class Discp_report(Base):
+    __tablename__ = 'discrepancyreports'
+    discp_id = Column(Integer, primary_key=True, autoincrement=True)
+    road_id = Column(Integer, ForeignKey('roads.road_id'))
+    qmr_id = Column(Integer, ForeignKey('qmr.qmr_id'))
+    report_text = Column(JSONB, nullable=False)
+    # qcr1_mail = Column(String(255), nullable=False)
+    # qcr2_mail = Column(String(255), nullable=False)
+    # qmr_mail = Column(String(255), nullable=False)
 
 
 Base.metadata.create_all(engine)
