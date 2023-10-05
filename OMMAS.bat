@@ -36,6 +36,9 @@ timeout /t 10
 
 echo Starting Python scripts...
 
+cd /d C:\Users\neave\Documents\project\SIH\Non Conformance
+start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_non_conformance.bat
+
 cd /d C:\Users\neave\Documents\project\SIH\apis
 start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_app.bat
 
