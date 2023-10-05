@@ -1,0 +1,3 @@
+@echo off
+echo Starting upload_producer.py...
+python upload_producer.py

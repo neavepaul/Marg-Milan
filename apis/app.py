@@ -1,4 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify
 import cv2
 import numpy as np
@@ -7,22 +6,17 @@ import fitz
 import tempfile
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from db_models import QCR1, QCR2, QMR, Subtest, Test, Surveyor
+from db_models import QCR1, QCR2, QMR, Subtest, Test, Surveyor, Road
 from discrepancy_checker import DiscrepancyChecker
+from sqlalchemy import create_engine, pool
+from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 
 # PostgreSQL database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/SIH'
-db = SQLAlchemy(app)
-
-# Create a model for your table
+db_url = 'postgresql://postgres:password@localhost:5432/SIH'
 
 
-class Road(db.Model):
-    __tablename__ = 'roads'
-    road_id = db.Column(db.Integer, primary_key=True)
-    road_name = db.Column(db.String(255), nullable=False)
 
 ###################################################################
 #    GET ROAD INFO     #
@@ -30,12 +24,16 @@ class Road(db.Model):
 @app.route('/get_data', methods=['GET'])
 def get_data():
     try:
+        engine = create_engine(db_url, poolclass=pool.QueuePool, pool_size=5, max_overflow=10)
+        Session = sessionmaker(bind=engine)
+        session = Session()
         # Query the database to retrieve data from the specified columns
-        data = db.session.query(Road.road_id, Road.road_name).all()
+        data = session(Road.road_id, Road.road_name).all()
 
         # Convert the data to a list of dictionaries
         result = [{'road_id': row[0], 'road_name': row[1]} for row in data]
-
+        session.close()
+        engine.dispose()
         return jsonify(result)
     except Exception as e:
         return str(e)

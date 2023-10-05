@@ -1,0 +1,3 @@
+@echo off
+echo Starting etl_pipe.py...
+python etl_pipe.py
