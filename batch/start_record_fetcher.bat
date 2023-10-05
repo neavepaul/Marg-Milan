@@ -1,0 +1,3 @@
+@echo off
+echo Starting record_fetcher.py...
+python record_fetcher.py

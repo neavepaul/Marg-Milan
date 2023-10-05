@@ -49,6 +49,7 @@ cd /d C:\Users\neave\Documents\project\SIH\Event Trigger
 start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_trigger_handler.bat
 
 cd /d C:\Users\neave\Documents\project\SIH\Post Process Handler
+start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_record_fetcher.bat
 start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_topic_consumer.bat
 
 echo All programs are live.
