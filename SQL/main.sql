@@ -1,4 +1,4 @@
-DROP TABLE reports,qcr1,qcr2,qmr,roads,subtest,surveyors,test, records, summary;
+DROP TABLE reports,qcr1,qcr2,qmr,roads,subtest,surveyors,test, records, summary, discrepancyreports;
 
 CREATE TABLE roads (
     road_id serial PRIMARY KEY,
@@ -99,7 +99,7 @@ CREATE TABLE discrepancyreports (
     discp_id serial PRIMARY KEY,
     road_id integer REFERENCES roads(road_id),
     qmr_id integer REFERENCES qmr(qmr_id),
-    report_text json NOT NULL,
+    report_text json NOT NULL
 );
 
 INSERT INTO roads(road_id,
@@ -110,8 +110,7 @@ INSERT INTO roads(road_id,
     pincode) values(1,'Hill road','Mumbai','Mumbai','Maharashtra',400050);
 
 
-INSERT INTO surveyors(surveyor_id,surveyor_name,surveyor_email) values(1,'Mr. Abhishek','abhi@shaikh.com');
-
+INSERT INTO surveyors(surveyor_id,surveyor_name,surveyor_email) values(1,'Mr. Abhishek','neave.mailbox@gmail.com');
 
 INSERT INTO test (
     test_id,
@@ -124,4 +123,6 @@ INSERT INTO subtest(subtest_id,subtest_name) values(1,'Soil Gradation'),(2,'Liqu
 
 SELECT * FROM roads where road_name='Hill road';
 
-SELECT * FROM qcr1;
+SELECT * FROM discrepancyreports;
+
+select * from summary;

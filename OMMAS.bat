@@ -39,8 +39,8 @@ echo Starting Python scripts...
 cd /d C:\Users\neave\Documents\project\SIH\Non Conformance
 start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_non_conformance.bat
 
-cd /d C:\Users\neave\Documents\project\SIH\apis
-start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_app.bat
+@REM cd /d C:\Users\neave\Documents\project\SIH\apis
+@REM start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_app.bat
 
 cd /d C:\Users\neave\Documents\project\SIH\Upload PDF Producer
 start cmd /k C:\Users\neave\Documents\project\SIH\batch\start_upload_producer.bat

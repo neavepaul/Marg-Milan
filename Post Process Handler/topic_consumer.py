@@ -18,7 +18,7 @@ for message in consumer:
     road_id = message.value['road_id']
 
     # Make a request to the specified URL with the road_id
-    response = requests.post('http://127.0.0.1:5000/disc', json={"road_id": road_id})
+    response = requests.post('http://127.0.0.1:5002/disc', json={"road_id": road_id})
 
     # Parse the response JSON
     response_data = response.json()
