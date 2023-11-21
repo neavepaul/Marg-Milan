@@ -1,5 +1,3 @@
-## Mods
-
 -   ### Editable Pdf
 
     -   less paper use
@@ -15,3 +13,7 @@
     -   although handwritting ocr is a fairly established technology. given our tabular format and extraction needs (to be extracted as a dataframe for the sql database) it makes it computationally intentive as we must make multiple calls to the handwritten-ocr module.
         -   if we send the table to the module as is the table borders will add noise to the output.
         -   one way to offfset the noise is to send each cell to the module individually if handwritten text is found in it. this also is not feasible given the size of the tables
+
+# However the PS does say scanned documents so we need to deliberate
+
+-   Complteted cell wise ocr. integrate trocr or something similar for handwritten.
