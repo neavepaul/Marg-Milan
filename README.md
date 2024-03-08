@@ -11,9 +11,6 @@ Kafka's distributed architecture enables Marg Milan to scale effortlessly to han
 ## Seamless Integrationx`
 Marg Milan seamlessly integrates Kafka with other components of the system, such as the PDF Upload Service and Data Analysis Service. Marg Milan has smooth communication between different services, enabling efficient data exchange and processing workflows. This seamless integration streamlines the development and deployment of new features and functionalities, ensuring the system remains agile and adaptable to evolving requirements.
 
-## Architecture
-Image
-
 ## YouTube Demo
 Curious to see Marg Milan in action? Check out our [YouTube demo]([https://youtu.be/PpvkBGu6tqo) to witness firsthand how Kafka powers real-time data processing and analysis in road construction projects.
 
